@@ -45,7 +45,9 @@ router.delete("/messages/:messageId", socialController.removeMessage); // Remove
 router.get("/messageMetas", socialController.retrieveMessageMetas); // Retrieve list of message metadata
 router.get("/messages/:messageId", socialController.retrieveMessageContent); // Retrieve message content
 router.get("/usersby/location/:location", socialController.findUsersByLocation); // Get list of usernames for users in given location
-router.get("/userValueHistory/getFirstValueForField/:fieldName", userValueHistoryController.getFirstValueForField); // Retrieve message content
+router.get("/userValueHistory", userValueHistoryController.getAllHistory); // Retrieve all value-history for current user
+router.get("/userValueHistory/getFirstValueForField/:fieldName", userValueHistoryController.getFirstValueForField); // Retrieve first known history value for given field
+router.patch("/userValueHistory/:dateOnly/:fieldName", userValueHistoryController.setHistoryFieldValue); // Set a history value for the current user and given date / field
 
 // API relays
 router.get("/unsplash", getUnsplashPic); // Get picture from API
