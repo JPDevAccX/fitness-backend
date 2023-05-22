@@ -92,8 +92,10 @@ export default class ProfileLib {
 
 		// Update weight / height history if one of those fields was modified
 		if (fieldName === 'weight' || fieldName === 'height') {
-			await UserValueHistoryLib.setFieldForCurrentDay(userId, fieldName, value) ;
+			return await UserValueHistoryLib.setFieldForCurrentDay(userId, fieldName, value) ;
 		}
+
+		return null ; // (no special status indicator by default)
 	}
 
 	static async updateProfileImageUrl(userId, newImageUrl) {
