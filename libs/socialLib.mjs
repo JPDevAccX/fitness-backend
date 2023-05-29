@@ -190,11 +190,18 @@ export default class SocialLib {
 		return message.messageContent ;
 	}
 
-	static async findUsersByLocation(location) {
+	static async findUsers(userNameSubString, location) {
 		const UserData = getUserDataModel() ;
 
-		const filter = { "userProfile.location": location, "userProfile.locationPrivacy": {$ne: 'pri'} } ;
+		let filter = {} ;
+		if (userNameSubString) {
+			filter = { "userProfile.userName": {$regex : userNameSubString, $options: "i"} } ; // (must be filtered or escaped!)
+		}
+		if (location) {
+			filter = {...filter, "userProfile.location": location, "userProfile.locationPrivacy": {$ne: 'pri'} } ;
+		}
+
 		const userDatas = await UserData.find(filter) ;
-		return userDatas.map(userData => userData.userProfile.userName) ;
+		return userDatas.map(userData => ({userName: userData.userProfile.userName, imageUrl: userData.userProfile.imageUrl})) ;
 	}
 }

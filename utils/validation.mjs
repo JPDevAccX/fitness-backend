@@ -1,7 +1,7 @@
 // - Custom validators (with some wrapping of validator-library functions) -
 
 import pkg from 'validator';
-const { isAscii, isDecimal, isInt } = pkg;
+const { isAscii, isAlphanumeric, isDecimal, isInt } = pkg;
 
 // Any string
 export function isString(value, minLen = 0, maxLen = +Infinity) {
@@ -11,6 +11,11 @@ export function isString(value, minLen = 0, maxLen = +Infinity) {
 // ASCII-only string
 export function isAsciiString(value, minLen = 0, maxLen = +Infinity) {
 	return isString(value, minLen, maxLen) && isAscii(value) ;
+}
+
+// Alphanumeric string
+export function isAlphaNumString(value, minLen = 0, maxLen = +Infinity) {
+	return isString(value, minLen, maxLen) && isAlphanumeric(value) ;
 }
 
 // E-mail address (permissive check)
