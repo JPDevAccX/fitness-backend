@@ -140,10 +140,18 @@ export async function retrieveMessageContent(req, res) {
 	}
 }
 
-// Get list of usernames for users in given location
-export async function findUsersByLocation(req, res) {
+// Get usernames and profile images for users matching given criteria
+export async function findUsers(req, res) {	
+	// Validation
+	if (req.params.userNameSubString === '_' && req.params.userLocation === '_') return res.status(400).send({message: "Bad request"}) ;
+	if (req.params.userNameSubString !== '_' && !v.isAlphaNumString(req.params.userNameSubString, 3)) return res.status(400).send({message: "Bad request"}) ;
+	if (!v.isString(req.params.userLocation)) return res.status(400).send({message: "Bad request"}) ;
+	
+	const userNameSubString = (req.params.userNameSubString === '_') ? null : req.params.userNameSubString ;
+	const userLocation = (req.params.userLocation === '_') ? null : req.params.userLocation ;
+
 	try {
-  	const userNames = await SocialLib.findUsersByLocation(req.params.location) ;
+  	const userNames = await SocialLib.findUsers(userNameSubString, userLocation) ;
 		return res.send(userNames) ;
 	}
 	catch(err) {
