@@ -39,15 +39,12 @@ export default class ProfileLib {
 			userProfileCensored.weightGoalValue = userProfile.weightGoalValue ;
 			userProfileCensored.weightGoalUnits = userProfile.weightGoalUnits ;
 		}
-		// (other fields the current user has access to and all the privacy settings)
+		// (other fields the current user has access to)
 		for (const [fieldName, value] of Object.entries(userProfile)) {
-			if (/Privacy$/.test(fieldName)) userProfileCensored[fieldName] = value ; // (include the privacy settings themselves)
-			else {
-				const privacySetting = userProfile[fieldName + 'Privacy'] ;
-				if (privacySetting) {
-					const privacyLevel = privacySettingToLevel[privacySetting] ;
-					if (accessLevel >= privacyLevel) userProfileCensored[fieldName] = value ; // (include the field if current user has sufficient access)
-				}
+			const privacySetting = userProfile[fieldName + 'Privacy'] ;
+			if (privacySetting) {
+				const privacyLevel = privacySettingToLevel[privacySetting] ;
+				if (accessLevel >= privacyLevel) userProfileCensored[fieldName] = value ; // (include the field if current user has sufficient access)
 			}
 		}
 
