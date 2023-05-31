@@ -151,7 +151,7 @@ export async function findUsers(req, res) {
 	const userLocation = (req.params.userLocation === '_') ? null : req.params.userLocation ;
 
 	try {
-  	const userNames = await SocialLib.findUsers(userNameSubString, userLocation) ;
+  	const userNames = await SocialLib.findUsers(req.session.userId, userNameSubString, userLocation) ;
 		return res.send(userNames) ;
 	}
 	catch(err) {
