@@ -190,7 +190,7 @@ export default class SocialLib {
 		return message.messageContent ;
 	}
 
-	static async findUsers(userNameSubString, location) {
+	static async findUsers(currentUserId, userNameSubString, location) {
 		const UserData = getUserDataModel() ;
 
 		let filter = {} ;
@@ -201,7 +201,28 @@ export default class SocialLib {
 			filter = {...filter, "userProfile.location": location, "userProfile.locationPrivacy": {$ne: 'pri'} } ;
 		}
 
+		const returnData = [] ;
 		const userDatas = await UserData.find(filter) ;
-		return userDatas.map(userData => ({userName: userData.userProfile.userName, imageUrl: userData.userProfile.imageUrl})) ;
+		for (const userData of userDatas) {
+			const userName =  userData.userProfile.userName ;
+			const isContact = !!await UserData.findOne({ _id: currentUserId, "contacts.userName": userName }) ;
+
+			// Source ID -> UserName
+			const userDataSrc = await UserData.findOne({ _id: currentUserId }) ;
+			if (!userDataSrc) throw "SELF_NOT_FOUND" ; // (shouldn't happen except for race condition)
+			const sourceUserName = userDataSrc.userProfile.userName ;
+
+			// Dest UserName -> ID	
+			const userDataDest = await UserData.findOne({ "userProfile.userName": userName }) ;
+			if (!userDataDest) throw "USER_NOT_FOUND" ; // (shouldn't happen except for race condition)
+			const destUserId = userDataDest._id ;
+
+			// Determine if user already has a pending contact request
+			const isPendingContact = await UserData.findOne({ _id: destUserId, "contactRequests.sourceUserName": sourceUserName }) ;
+
+			returnData.push({userName, imageUrl: userData.userProfile.imageUrl, isContact, isPendingContact}) ;
+		}
+
+		return returnData ;
 	}
 }
