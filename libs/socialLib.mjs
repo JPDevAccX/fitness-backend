@@ -190,7 +190,7 @@ export default class SocialLib {
 		return message.messageContent ;
 	}
 
-	static async findUsers(currentUserId, userNameSubString, location) {
+	static async findUsers(currentUserId, userNameSubString, location, age) {
 		const UserData = getUserDataModel() ;
 
 		let filter = {} ;
@@ -199,6 +199,9 @@ export default class SocialLib {
 		}
 		if (location) {
 			filter = {...filter, "userProfile.location": location, "userProfile.locationPrivacy": {$ne: 'pri'} } ;
+		}
+		if (age) {
+			filter = {...filter, "userProfile.age": age, "userProfile.agePrivacy": {$ne: 'pri'} } ;
 		}
 
 		const returnData = [] ;
