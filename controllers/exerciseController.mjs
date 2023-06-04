@@ -2,34 +2,22 @@ import axios from "axios";
 import getCustomWorkoutModel from "../models/customWorkout.mjs";
 import getUserDataModel from "../models/userData.mjs"
 
-function responseStatusCheck(res) {
-	if (res.status >= 200 && res.status < 300) {
-		return Promise.resolve(res);
-	} else {
-		return Promise.reject(new Error(res.status));
-	}
-}
-
 export async function getBodyparts(req, res) {
 	const key = process.env.EXERCISEAPI;
 	const url = "https://exercisedb.p.rapidapi.com/exercises/bodyPartList"
 	try {
-		const request = await axios.get(`${url}`,
+		const response = await axios.get(`${url}`,
 			{
 				headers: {
 					"X-RapidAPI-Key": key,
 					'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
 				}
 			})
-		const response = await responseStatusCheck(request);
-		const data = response.data;
-
-		return res.send(data);
+		
+		return res.send(response.data);
 	}
-
 	catch (err) {
-		console.log(err)
-		return res.status(500).send({ message: "Something went wrong!" })
+		return res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message || "Something went wrong!" })
 	}
 }
 
@@ -38,22 +26,18 @@ export async function getExercise(req, res) {
 	const bodypart = req.params.bodypart;
 	const url = `https://exercisedb.p.rapidapi.com/exercises/bodyPart/${bodypart}`
 	try {
-		const request = await axios.get(`${url}`,
+		const response = await axios.get(`${url}`,
 			{
 				headers: {
 					"X-RapidAPI-Key": key,
 					'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
 				}
 			})
-		const response = await responseStatusCheck(request);
-		const data = response.data;
 
-		return res.send(data);
+		return res.send(response.data);
 	}
-
 	catch (err) {
-		console.log(err)
-		return res.status(500).send({ message: "Something went wrong!" })
+		return res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message || "Something went wrong!" })
 	}
 }
 
