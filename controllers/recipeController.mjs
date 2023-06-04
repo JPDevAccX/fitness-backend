@@ -3,14 +3,6 @@ import getRecipeModel from "../models/recipe.mjs";
 import getPictureModel from "../models/picture.mjs";
 import getUserDataModel from "../models/userData.mjs"
 
-function responseStatusCheck(res) {
-    if (res.status >= 200 && res.status < 300) {
-        return Promise.resolve(res);
-    } else {
-        return Promise.reject(new Error(res.status));
-    }
-}
-
 export async function getRecipe(req, res) {
 		const headers = JSON.parse(process.env.FOOD_API_HEADERS) ;
     const url = process.env.FOOD_API_BASEURL + "/recipes/complexSearch" ;
@@ -20,13 +12,12 @@ export async function getRecipe(req, res) {
             query: req.params.query
         })
 
-        const request = await axios.get(`${url}?${params.toString()}`, { headers }) ;
-        const response = await responseStatusCheck(request);
+        const response = await axios.get(`${url}?${params.toString()}`, { headers }) ;
         return res.send(response.data);
     }
 
     catch (err) {
-        return res.status(500).send({ message: "Something went wrong!" })
+        return res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message || "Something went wrong!" })
     }
 }
 
@@ -70,13 +61,12 @@ export async function getFullRecipe(req, res) {
 		const headers = JSON.parse(process.env.FOOD_API_HEADERS) ;
     const url = process.env.FOOD_API_BASEURL + "/recipes/" + req.params.id + "/information"
     try {
-        const request = await axios.get(`${url}`, { headers }) ;
-        const response = await responseStatusCheck(request);
-        return res.send( response.data);
+        const response = await axios.get(`${url}`, { headers }) ;
+        return res.send(response.data);
     }
 
     catch (err) {
-        return res.status(500).send({ message: "Something went wrong!" })
+        return res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message || "Something went wrong!" })
     }
 }
 
@@ -85,7 +75,7 @@ export async function getIngredientInfo(req, res) {
     const url = process.env.FOOD_API_BASEURL + "/food/ingredients/" + req.params.id + "/information"
     try {
 
-        const request = await axios.get(`${url}`,
+        const response = await axios.get(`${url}`,
 
             {
                 params: {
@@ -95,14 +85,11 @@ export async function getIngredientInfo(req, res) {
                 headers
             }
         )
-        const response = await responseStatusCheck(request);
-        const data = response.data;
-
-        return res.send(data);
+        return res.send(response.data);
     }
 
     catch (err) {
-        return res.status(500).send({ message: "Something went wrong!" })
+        return res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message || "Something went wrong!" })
     }
 }
 
@@ -110,22 +97,17 @@ export async function getIngredientID(req, res) {
 		const headers = JSON.parse(process.env.FOOD_API_HEADERS) ;
     const url = process.env.FOOD_API_BASEURL + "/food/ingredients/search"
     try {
-
-        const request = await axios.get(`${url}`,
-
+        const response = await axios.get(`${url}`,
             {
                 params: { query: req.params.query },
                 headers
             }
         )
-        const response = await responseStatusCheck(request);
-        const data = response.data;
-
-        return res.send(data);
+        return res.send(response.data);
     }
 
     catch (err) {
-        return res.status(500).send({ message: "Something went wrong!" })
+       return res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message || "Something went wrong!" })
     }
 }
 

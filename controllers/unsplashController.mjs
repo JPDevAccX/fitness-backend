@@ -1,15 +1,5 @@
 import axios from "axios";
 
-
-function responseStatusCheck(res) {
-
-	if (res.status >= 200 && res.status < 300) {
-		return Promise.resolve(res);
-	} else {
-		return Promise.reject(new Error(res.status));
-	}
-}
-
 export async function getUnsplashPic(req, res) {
 
 	const key = process.env.UNSPLASH_KEY;
@@ -22,14 +12,11 @@ export async function getUnsplashPic(req, res) {
 			orientation: "landscape"
 		})
 
-		const request = await axios.get(`${url}?${params.toString()}`)
-		const response = await responseStatusCheck(request);
-		const data = response.data;
-
-		return res.send(data);
+		const response = await axios.get(`${url}?${params.toString()}`)
+		return res.send(response.data);
 	}
 
 	catch (err) {
-		return res.status(500).send({ message: "Something went wrong!" })
+		return res.status(err.response?.status ?? 500).send({ message: err.response?.data?.message || "Something went wrong!" })
 	}
 }
